@@ -1,10 +1,10 @@
 name: Hexo CI/CD
 
-# Set 触发条件：在 push 到 content 分支后触发
+# Set 触发条件：在 push 到 main 分支后触发
 on:
   push:
     branches: 
-      - content
+      - main
 
 env:
   TZ: Asia/Taipei
@@ -54,4 +54,4 @@ jobs:
         git config user.email "hoshinocat@outlook.com"
         git add .
         git commit -m "GitHub Actions Auto Builder at $(date +'%Y-%m-%d %H:%M:%S')"
-        git push --force --quiet "https://${{ secrets.ACCESS_TOKEN }}@$GITHUB_REPO" master:master
+        git push --force --quiet "https://${{ secrets.ACCESS_TOKEN }}@$GITHUB_REPO" master:docs
