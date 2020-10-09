@@ -1,53 +1,66 @@
 name: Hexo CI/CD
 
-# Set 触发条件：在 push 到 main 分支后触发
 on:
   push:
-    branches: 
-      - main
+    branches:
+      - master
 
 env:
-  TZ: Asia/Taipei
+  GIT_USER: Hoshino Makito
+  GIT_EMAIL: hoshinocat@outlook.com
+  THEME_REPO: chengfork/hexo-theme-sagiri
+  THEME_BRANCH: master
+  DEPLOY_REPO: meowcheng/meowcheng.github.io
+  DEPLOY_BRANCH: docs
 
 jobs:
-  blog-cicd:
-    name: Hexo blog build & deploy
+  build:
+    name: Build on node ${{ matrix.node_version }} and ${{ matrix.os }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node_version: [12.x]
 
     steps:
-    - name: Checkout codes
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Setup node
-      uses: actions/setup-node@v1
-      with:
-        node-version: '12.x'
+      - name: Checkout theme repo
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.THEME_REPO }}
+          ref: ${{ env.THEME_BRANCH }}
+          path: themes/sagiri
 
-    - name: Cache node modules
-      # 包缓存目录
-      uses: actions/cache@v1
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      - name: Checkout deploy repo
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.DEPLOY_REPO }}
+          ref: ${{ env.DEPLOY_BRANCH }}
+          path: .deploy_git
 
-    - name: Install hexo dependencies
-      # 下载 hexo-cli 脚手架及相关安装包
-      run: |
-        npm install hexo-cli gulp -g
-        npm install
-    - name: Generate files
-      # 编译 markdown 文件
-      run: |
-        hexo clean
-        hexo generate
+      - name: Use Node.js ${{ matrix.node_version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node_version }}
 
-    - name: Deploy hexo blog
-      env: 
-        GITHUB_REPO: github.com/meowcheng/meowcheng.github.io
-      run: |
-        cd ./public && git init && git add .
-        git config user.name "MeowCheng"
-        git config user.email "hoshinocat@outlook.com"
-        git add .
-        git commit -m "GitHub Actions Auto Builder at $(date +'%Y-%m-%d %H:%M:%S')"
-        git push --force --quiet "https://${{ secrets.ACCESS_TOKEN }}@$GITHUB_REPO" main:docs
+      - name: Configuration environment
+        env:
+          HEXO_DEPLOY_PRI: ${{secrets.HEXO_DEPLOY_PRI}}
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$HEXO_DEPLOY_PRI" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          sudo timedatectl set-timezone "Asia/Taipei"
+          git config --global user.name $GIT_USER
+          git config --global user.email $GIT_EMAIL
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Deploy hexo
+        run: |
+          npm run deploy
