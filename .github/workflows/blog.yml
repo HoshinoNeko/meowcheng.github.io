@@ -35,15 +35,11 @@ jobs:
       run: |
         npm install hexo-cli gulp -g
         npm install
-
     - name: Generate files
       # 编译 markdown 文件
       run: |
         hexo clean
         hexo generate
-
-    - name: Execute gulp task
-      run: gulp
 
     - name: Deploy hexo blog
       env: 
