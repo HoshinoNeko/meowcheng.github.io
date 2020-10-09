@@ -10,7 +10,7 @@ env:
   GIT_EMAIL: hoshinocat@outlook.com
   THEME_REPO: chengfork/hexo-theme-sagiri
   THEME_BRANCH: master
-  DEPLOY_REPO: meowcheng/meowcheng.github.io
+  DEPLOY_REPO: 
   DEPLOY_BRANCH: docs
 
 jobs:
