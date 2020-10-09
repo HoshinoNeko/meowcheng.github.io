@@ -3,7 +3,7 @@ name: Hexo CI/CD
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   GIT_USER: Hoshino Makito
