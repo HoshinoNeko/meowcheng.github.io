@@ -1,4 +1,4 @@
 deploy:
   type: git
   repo: https://ACCESS_TOKEN@github.com/meowcheng/meowcheng.github.io.git
-  branch: main
+  branch: docs
