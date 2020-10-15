@@ -20,7 +20,7 @@ jobs:
 
     - name: Set Env
       env: 
-        GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}  
+        GITHUB_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}  
       run: |
         git config --global user.name 'Hoshi' # github用户名
         git config --global user.email '21078047+MeowCheng@users.noreply.github.com' # github邮箱
